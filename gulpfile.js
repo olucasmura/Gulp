@@ -1,24 +1,30 @@
-var gulp = require('gulp');
-var sass = require('gulp-sass');
-var imagemin = require('gulp-imagemin');
-var uglify = require('gulp-uglify');
+const gulp = require('gulp');
+const sass = require('gulp-sass')(require('sass'));
+const imagemin = require('gulp-imagemin');
+const uglify = require('gulp-uglify');
 
-gulp.task('sass', function () {
-    return gulp.src('sass/*.scss')
-    .pipe(sass())
-    .pipe(gulp.dest('css'));
-});
+function compilaSass() {
+    return gulp.src('./source/styles/main.scss')
+        .pipe(sass({
+            outputStyle: 'compressed'
+        }))
+        .pipe(gulp.dest('./build/styles'))
+}
 
-gulp.task('imagemin', function () {
-    return gulp.src('img/*.jpg')
+function comprimeImagens() {
+    return gulp.src('./source/images/*')
     .pipe(imagemin())
-    .pipe(gulp.dest('img'));
-});
+    .pipe(gulp.dest('./build/images'));
+}
 
-gulp.task('uglify', function () {
-    return gulp.src('js/*.js')
+function comprimeJavaScript() {
+    return gulp.src('./source/scripts/*.js')
     .pipe(uglify())
-    .pipe(gulp.dest('js'));
-});
+    .pipe(gulp.dest('./build/scripts'))
+}
 
-gulp.task('default', ['sass', 'imagemin', 'uglify']);
+exports.default = function() {
+    gulp.watch('./source/styles/*.scss', { ignoreInitial: false }, gulp.series(compilaSass));
+    gulp.watch('./source/images/*', { ignoreInitial: false }, gulp.series(comprimeImagens));
+    gulp.watch('./source/scripts/*.js', { ignoreInitial: false }, gulp.series(comprimeJavaScript));
+}
